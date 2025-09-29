@@ -48,6 +48,13 @@ const portfolioData = {
   'beleza-natural': {
     title: 'Campanha Beleza Natural',
     subtitle: 'Linha de produtos para cuidados com a pele',
+    videoUrl: 'src/videos/beleza-natural/campanha-principal.mp4',
+    images: [
+      'https://images.pexels.com/photos/3762879/pexels-photo-3762879.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/3762851/pexels-photo-3762851.jpeg?auto=compress&cs=tinysrgb&w=800'
+    ],
     description: `
       <h3>Objetivos da Campanha</h3>
       <p>A Beleza Natural buscava aumentar o conhecimento da marca entre o público jovem adulto (18-35 anos) e impulsionar as vendas de sua nova linha de cuidados faciais. O desafio era comunicar os benefícios dos produtos de forma autêntica e engajante.</p>
@@ -68,6 +75,13 @@ const portfolioData = {
   'super-premium': {
     title: 'Campanha Super Premium',
     subtitle: 'Promoção especial produtos orgânicos',
+    videoUrl: 'src/videos/super-premium/vida-saudavel.mp4',
+    images: [
+      'https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1153369/pexels-photo-1153369.jpeg?auto=compress&cs=tinysrgb&w=800'
+    ],
     description: `
       <h3>Objetivos da Campanha</h3>
       <p>O Super Premium queria destacar sua linha de produtos orgânicos e sustentáveis, aumentando o tráfego nas lojas físicas e vendas online. O foco era educar o consumidor sobre os benefícios dos alimentos orgânicos.</p>
@@ -88,6 +102,13 @@ const portfolioData = {
   'moda-style': {
     title: 'Campanha Moda & Style',
     subtitle: 'Coleção verão 2025',
+    videoUrl: 'src/videos/moda-style/verao-2025.mp4',
+    images: [
+      'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1381556/pexels-photo-1381556.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=800'
+    ],
     description: `
       <h3>Objetivos da Campanha</h3>
       <p>A Moda & Style lançava sua coleção verão 2025 e precisava gerar buzz e conversões entre o público feminino 20-40 anos. O objetivo era mostrar versatilidade e qualidade das peças.</p>
@@ -108,6 +129,13 @@ const portfolioData = {
   'gourmet-foods': {
     title: 'Campanha Gourmet Foods',
     subtitle: 'Delivery de pratos especiais',
+    videoUrl: 'src/videos/gourmet-foods/gourmet-todo-dia.mp4',
+    images: [
+      'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=800'
+    ],
     description: `
       <h3>Objetivos da Campanha</h3>
       <p>A Gourmet Foods queria expandir seu serviço de delivery e educar o mercado sobre pratos gourmet acessíveis. O desafio era quebrar a percepção de que comida gourmet é apenas para ocasiões especiais.</p>
@@ -169,20 +197,37 @@ function loadModalContent(data) {
       </div>
       
       <div class="campaign-video">
-        <div class="video-placeholder">
-          <i class="fas fa-play-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-          <p>Vídeo publicitário produzido por Amanda Lima</p>
-        </div>
+        ${data.videoUrl ? `
+          <video controls class="campaign-video-player" poster="${data.images ? data.images[0] : ''}">
+            <source src="${data.videoUrl}" type="video/mp4">
+            <div class="video-placeholder">
+              <i class="fas fa-play-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+              <p>Seu navegador não suporta vídeos HTML5</p>
+            </div>
+          </video>
+        ` : `
+          <div class="video-placeholder">
+            <i class="fas fa-play-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+            <p>Vídeo publicitário produzido por Amanda Lima</p>
+            <small style="color: #666; font-size: 0.8rem;">Vídeo será adicionado em breve</small>
+          </div>
+        `}
       </div>
       
       <div class="campaign-carousel">
         <h3 style="margin-bottom: 1rem; color: var(--text-dark);">Fotos da Campanha</h3>
         <div class="carousel-container">
           <div class="carousel-slides" id="carousel-slides">
-            <div class="carousel-slide">Foto 1 da campanha</div>
-            <div class="carousel-slide">Foto 2 da campanha</div>
-            <div class="carousel-slide">Foto 3 da campanha</div>
-            <div class="carousel-slide">Foto 4 da campanha</div>
+            ${data.images ? data.images.map((img, index) => `
+              <div class="carousel-slide">
+                <img src="${img}" alt="Foto ${index + 1} da campanha" class="carousel-image" />
+              </div>
+            `).join('') : `
+              <div class="carousel-slide">Foto 1 da campanha</div>
+              <div class="carousel-slide">Foto 2 da campanha</div>
+              <div class="carousel-slide">Foto 3 da campanha</div>
+              <div class="carousel-slide">Foto 4 da campanha</div>
+            `}
           </div>
           <button class="carousel-nav carousel-prev"><</button>
           <button class="carousel-nav carousel-next">></button>

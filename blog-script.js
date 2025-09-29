@@ -48,7 +48,8 @@ const portfolioData = {
   'beleza-natural': {
     title: 'Campanha Beleza Natural',
     subtitle: 'Linha de produtos para cuidados com a pele',
-    videoUrl: 'src/videos/beleza-natural/campanha-principal.mp4',
+    videoUrl: '/videos/beleza-natural/campanha-principal.mp4',
+    localImages: '/images/campanhas/beleza-natural/',
     images: [
       'https://images.pexels.com/photos/3762879/pexels-photo-3762879.jpeg?auto=compress&cs=tinysrgb&w=800',
       'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -75,7 +76,8 @@ const portfolioData = {
   'super-premium': {
     title: 'Campanha Super Premium',
     subtitle: 'Promoção especial produtos orgânicos',
-    videoUrl: 'src/videos/super-premium/vida-saudavel.mp4',
+    videoUrl: '/videos/super-premium/vida-saudavel.mp4',
+    localImages: '/images/campanhas/super-premium/',
     images: [
       'https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=800',
       'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -102,7 +104,8 @@ const portfolioData = {
   'moda-style': {
     title: 'Campanha Moda & Style',
     subtitle: 'Coleção verão 2025',
-    videoUrl: 'src/videos/moda-style/verao-2025.mp4',
+    videoUrl: '/videos/moda-style/verao-2025.mp4',
+    localImages: '/images/campanhas/moda-style/',
     images: [
       'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800',
       'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -129,7 +132,8 @@ const portfolioData = {
   'gourmet-foods': {
     title: 'Campanha Gourmet Foods',
     subtitle: 'Delivery de pratos especiais',
-    videoUrl: 'src/videos/gourmet-foods/gourmet-todo-dia.mp4',
+    videoUrl: '/videos/gourmet-foods/gourmet-todo-dia.mp4',
+    localImages: '/images/campanhas/gourmet-foods/',
     images: [
       'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800',
       'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -155,6 +159,44 @@ const portfolioData = {
   }
 };
 
+// Function to check if local images exist and load them
+async function loadLocalImages(basePath, fallbackImages) {
+  const localImages = [];
+  
+  // Try to load up to 6 local images
+  for (let i = 1; i <= 6; i++) {
+    try {
+      const imagePath = `${basePath}foto${i}.jpg`;
+      const response = await fetch(imagePath, { method: 'HEAD' });
+      if (response.ok) {
+        localImages.push(imagePath);
+      } else {
+        // Try PNG format
+        const pngPath = `${basePath}foto${i}.png`;
+        const pngResponse = await fetch(pngPath, { method: 'HEAD' });
+        if (pngResponse.ok) {
+          localImages.push(pngPath);
+        }
+      }
+    } catch (error) {
+      // Image doesn't exist, continue
+    }
+  }
+  
+  // Return local images if found, otherwise use fallback
+  return localImages.length > 0 ? localImages : fallbackImages;
+}
+
+// Function to check if video exists
+async function checkVideoExists(videoUrl) {
+  try {
+    const response = await fetch(videoUrl, { method: 'HEAD' });
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
 // Open modal when clicking on portfolio cards
 portfolioCards.forEach(card => {
   card.addEventListener('click', (e) => {
@@ -167,9 +209,7 @@ portfolioCards.forEach(card => {
     const data = portfolioData[companyId];
     
     if (data) {
-      loadModalContent(data);
-      modal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
+      loadModalContent(data, companyId);
     }
   });
 });
@@ -188,7 +228,25 @@ function closeModal() {
 }
 
 // Load modal content
-function loadModalContent(data) {
+async function loadModalContent(data, companyId) {
+  // Show loading state
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  modalBody.innerHTML = `
+    <div style="text-align: center; padding: 3rem;">
+      <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #8b5cf6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <p style="margin-top: 1rem; color: #666;">Carregando campanha...</p>
+    </div>
+  `;
+  
+  // Check if video exists
+  const videoExists = await checkVideoExists(data.videoUrl);
+  
+  // Load local images if available
+  const imagesToUse = data.localImages ? 
+    await loadLocalImages(data.localImages, data.images) : 
+    data.images;
+  
   modalBody.innerHTML = `
     <div class="campaign-details">
       <div class="campaign-header">
@@ -197,7 +255,7 @@ function loadModalContent(data) {
       </div>
       
       <div class="campaign-video">
-        ${data.videoUrl ? `
+        ${videoExists ? `
           <video controls class="campaign-video-player" poster="${data.images ? data.images[0] : ''}">
             <source src="${data.videoUrl}" type="video/mp4">
             <div class="video-placeholder">
@@ -218,7 +276,7 @@ function loadModalContent(data) {
         <h3 style="margin-bottom: 1rem; color: var(--text-dark);">Fotos da Campanha</h3>
         <div class="carousel-container">
           <div class="carousel-slides" id="carousel-slides">
-            ${data.images ? data.images.map((img, index) => `
+            ${imagesToUse ? imagesToUse.map((img, index) => `
               <div class="carousel-slide">
                 <img src="${img}" alt="Foto ${index + 1} da campanha" class="carousel-image" />
               </div>

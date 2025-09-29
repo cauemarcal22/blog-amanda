@@ -1071,6 +1071,12 @@ a:focus {
   outline-offset: 2px;
 }
 
+/* Loading Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* Animation Classes */
 .fade-in {
   opacity: 0;
